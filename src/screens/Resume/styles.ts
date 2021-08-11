@@ -22,6 +22,11 @@ export const Header = styled.View`
   padding-bottom: 19px;
 `;
 
+export const ChartContainer = styled.View`
+  width: 100%;
+  align-items: center;
+`;
+
 export const Title = styled.Text`
   font-family: ${({ theme }) => theme.fonts.regular};
   font-size: ${RFValue(18)}px;
