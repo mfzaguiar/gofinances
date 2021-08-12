@@ -7,7 +7,7 @@ import { StatusBar } from 'react-native';
 import { ThemeProvider } from 'styled-components';
 import AppLoading from 'expo-app-loading';
 
-import { NavigationContainer } from '@react-navigation/native';
+import Routes from './src/routes';
 
 import {
   useFonts,
@@ -37,11 +37,9 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <StatusBar barStyle="light-content" />
 
-      <NavigationContainer>
-        <AuthProvider>
-          <SignIn />
-        </AuthProvider>
-      </NavigationContainer>
+      <AuthProvider>
+        <Routes />
+      </AuthProvider>
     </ThemeProvider>
   );
 }
