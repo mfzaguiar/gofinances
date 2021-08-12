@@ -27,6 +27,8 @@ import {
   LoadContainer,
 } from './styles';
 
+import { useAuth } from '../../hooks/auth';
+
 import theme from '../../global/styles/theme';
 
 export interface DataListProps extends TransactionCardProps {
@@ -45,7 +47,7 @@ interface HighLightData {
 }
 
 export function Dashboard() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [transactions, setTransactions] = useState<DataListProps[]>([]);
   const [highLightData, setHighLightData] = useState<HighLightData>({
     income: {
@@ -61,6 +63,8 @@ export function Dashboard() {
       lastTransaction: '',
     },
   });
+
+  const { singnOut, user } = useAuth();
 
   function getLastTransactionDate(
     collection: DataListProps[],
@@ -81,7 +85,7 @@ export function Dashboard() {
   }
 
   async function loadTransactions() {
-    const dataKey = '@gofinances:transactions';
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
     const response = await AsyncStorage.getItem(dataKey);
     const transactions = response ? JSON.parse(response) : [];
 
@@ -101,7 +105,7 @@ export function Dashboard() {
           currency: 'BRL',
         });
 
-        const date = Intl.DateTimeFormat('pt-BR', {
+        const date = Intl.DateTimeFormat('pt-Br', {
           day: '2-digit',
           month: '2-digit',
           year: '2-digit',
@@ -158,10 +162,14 @@ export function Dashboard() {
     setIsLoading(false);
   }
 
-  useEffect(() => {
+  async function handleSignOut() {
+    await singnOut();
+  }
+
+  /* useEffect(() => {
     loadTransactions();
   }, []);
-
+ */
   useFocusEffect(
     useCallback(() => {
       loadTransactions();
@@ -181,16 +189,16 @@ export function Dashboard() {
               <UserInfo>
                 <Photo
                   source={{
-                    uri: 'https://avatars.githubusercontent.com/u/31289353?v=4',
+                    uri: user.photo,
                   }}
                 />
                 <User>
                   <UserGreeting>Ola, </UserGreeting>
-                  <Username>Matheus</Username>
+                  <Username>{user.name}</Username>
                 </User>
               </UserInfo>
 
-              <LogoutButton onPress={() => {}}>
+              <LogoutButton onPress={handleSignOut}>
                 <Icon name="power" />
               </LogoutButton>
             </UserWrapper>
