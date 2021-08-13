@@ -70,22 +70,34 @@ export function Dashboard() {
     collection: DataListProps[],
     type: 'positive' | 'negative'
   ) {
-    const lastTransaction = Math.max.apply(
-      Math,
-      collection
-        .filter((transaction) => transaction.type === type)
-        .map((transaction) => new Date(transaction.date).getTime())
+    const collectionFilttered = collection.filter(
+      (transaction) => transaction.type === type
     );
 
-    return Intl.DateTimeFormat('pt-BR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    }).format(new Date(lastTransaction));
+    if (collectionFilttered.length === 0) {
+      return 0;
+    }
+
+    const lastTransaction = new Date(
+      Math.max.apply(
+        Math,
+        collectionFilttered.map((transaction) =>
+          new Date(transaction.date).getTime()
+        )
+      )
+    );
+
+    return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleDateString(
+      'pt-BR',
+      {
+        month: 'long',
+      }
+    )}`;
   }
 
   async function loadTransactions() {
     const dataKey = `@gofinances:transactions_user:${user.id}`;
+
     const response = await AsyncStorage.getItem(dataKey);
     const transactions = response ? JSON.parse(response) : [];
 
@@ -105,7 +117,7 @@ export function Dashboard() {
           currency: 'BRL',
         });
 
-        const date = Intl.DateTimeFormat('pt-Br', {
+        const date = Intl.DateTimeFormat('pt-BR', {
           day: '2-digit',
           month: '2-digit',
           year: '2-digit',
@@ -128,11 +140,16 @@ export function Dashboard() {
       transactions,
       'positive'
     );
+
     const lastTransactionOutcome = getLastTransactionDate(
       transactions,
       'negative'
     );
-    const totalInterval = `01 a ${lastTransactionOutcome}`;
+
+    const totalInterval =
+      lastTransactionOutcome === 0
+        ? 'Não há transações'
+        : `01 a ${lastTransactionOutcome}`;
 
     const total = entriesTotal - expensiveTotal;
 
@@ -142,14 +159,20 @@ export function Dashboard() {
           style: 'currency',
           currency: 'BRL',
         }),
-        lastTransaction: `Última entrada dia ${lastTransactionIncome}`,
+        lastTransaction:
+          lastTransactionIncome === 0
+            ? 'Não há transações'
+            : `Última entrada dia ${lastTransactionIncome}`,
       },
       outcome: {
         amount: expensiveTotal.toLocaleString('pt-BR', {
           style: 'currency',
           currency: 'BRL',
         }),
-        lastTransaction: `Última saída em ${lastTransactionOutcome}`,
+        lastTransaction:
+          lastTransactionOutcome === 0
+            ? 'Não há transações'
+            : `Última saída dia ${lastTransactionOutcome}`,
       },
       total: {
         amount: total.toLocaleString('pt-BR', {
@@ -166,10 +189,10 @@ export function Dashboard() {
     await singnOut();
   }
 
-  /* useEffect(() => {
+  useEffect(() => {
     loadTransactions();
   }, []);
- */
+
   useFocusEffect(
     useCallback(() => {
       loadTransactions();
