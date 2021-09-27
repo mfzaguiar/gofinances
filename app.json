@@ -4,10 +4,24 @@
   "expo": {
     "name": "gofinances",
     "slug": "gofinances",
-    "scheme" : "gofinances",
+    "scheme": "gofinances",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "icon": "./assets/icon.png",
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#5636D3"
+      }
+    },
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#5636D3"
+    },
+    "description": "Gerenciar suas finanças",
+    "githubUrl": "https://github.com/mfzaguiar/gofinances"
   }
 }
